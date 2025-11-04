@@ -1,0 +1,19 @@
+syntax = "proto3";
+package demo.customer.api;
+option java_package = "it.salspa.demo.spring.grpc.customer.api";
+option java_multiple_files = true;
+option java_outer_classname = "CustomerApiProto";
+
+service CustomerService {
+  rpc CreateCustomer (CreateCustomerRequest) returns (CustomerResponse);
+}
+
+message CreateCustomerRequest {
+  string name = 1;
+}
+
+message CustomerResponse {
+  string id = 1;
+  string name = 2;
+}
+

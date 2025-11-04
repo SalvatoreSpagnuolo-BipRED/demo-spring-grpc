@@ -1,0 +1,20 @@
+syntax = "proto3";
+package demo.contract.api;
+option java_package = "it.salspa.demo.spring.grpc.contract.api";
+option java_multiple_files = true;
+option java_outer_classname = "ContractApiProto";
+
+service ContractService {
+  rpc CreateContract (CreateContractRequest) returns (ContractResponse);
+}
+
+message CreateContractRequest {
+  string contract_name = 1;
+  string contract_details = 2;
+}
+
+message ContractResponse {
+  string code = 1;
+  int32 version = 2;
+}
+

@@ -1,0 +1,21 @@
+syntax = "proto3";
+package demo.pricing.api;
+option java_package = "it.salspa.demo.spring.grpc.pricing.api";
+option java_multiple_files = true;
+option java_outer_classname = "PricingApiProto";
+
+service PricingService {
+  rpc CalculatePrice (PriceRequest) returns (PriceResponse);
+}
+
+message PriceRequest {
+  string product_code = 1;
+  int32 quantity = 2;
+}
+
+message PriceResponse {
+  string product_code = 1;
+  int32 quantity = 2;
+  double total_price = 3;
+}
+

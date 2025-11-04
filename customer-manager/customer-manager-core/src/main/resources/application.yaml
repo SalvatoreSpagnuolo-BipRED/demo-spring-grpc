@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: customer-manager
+
+grpc:
+  server:
+    port: 9092
+

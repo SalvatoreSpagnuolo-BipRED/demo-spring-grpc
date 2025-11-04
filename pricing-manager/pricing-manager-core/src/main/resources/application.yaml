@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: pricing-manager
+
+grpc:
+  server:
+    port: 9093
+
