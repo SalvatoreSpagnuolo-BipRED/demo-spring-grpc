@@ -1,0 +1,35 @@
+# Configurazione di test per console-api
+spring:
+  application:
+    name: console-api
+
+  # Datasource H2 per i test
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # Configurazione MongoDB per i test
+  data:
+    mongodb:
+      auto-index-creation: true
+      # Disabilita la connessione reale durante i test
+      uri: mongodb://localhost:27017/test
+
+  # JPA configuration con H2
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    database: H2
+    show-sql: false
+
+# Configurazione gRPC
+grpc:
+  client:
+    # Disabilita i client gRPC non disponibili durante i test
+    IN_PROCESS_CHANNEL_NAME:
+      address: in-process:test
+
+

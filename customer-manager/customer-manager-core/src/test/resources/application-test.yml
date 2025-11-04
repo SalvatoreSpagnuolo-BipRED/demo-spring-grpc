@@ -1,0 +1,38 @@
+# Configurazione di test per customer-manager-core
+spring:
+  application:
+    name: customer-manager-core
+
+  # Datasource H2 per i test
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # Configurazione MongoDB per i test
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://localhost:27017/test-customer
+
+  # Database JPA per i test
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    database: H2
+    show-sql: false
+
+# Configurazione gRPC server
+grpc:
+  server:
+    port: 9092
+    enable-keep-alive: true
+    max-inbound-message-size: 4194304
+
+  # Disabilita i client gRPC non disponibili durante i test
+  client:
+    IN_PROCESS_CHANNEL_NAME:
+      address: in-process:test-customer
+

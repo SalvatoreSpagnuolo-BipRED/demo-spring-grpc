@@ -1,0 +1,41 @@
+# Configurazione principale per pricing-manager-core
+spring:
+  application:
+    name: pricing-manager-core
+    version: 0.0.1-SNAPSHOT
+
+  # Configurazione MongoDB
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://localhost:27017/pricing
+
+  # JPA configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+# Configurazione gRPC server
+grpc:
+  server:
+    port: 9093
+    enable-keep-alive: true
+    max-inbound-message-size: 4194304
+
+  # Client per comunicare con altri servizi
+  client:
+    contract-manager-service:
+      address: localhost:9091
+      negotiation-type: plaintext
+
+    customer-manager-service:
+      address: localhost:9092
+      negotiation-type: plaintext
+
+# Logging
+logging:
+  level:
+    root: INFO
+    it.salspa: DEBUG
+

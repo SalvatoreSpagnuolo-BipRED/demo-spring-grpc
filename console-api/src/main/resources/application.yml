@@ -1,0 +1,42 @@
+# Configurazione principale per console-api
+spring:
+  application:
+    name: console-api
+    version: 0.0.1-SNAPSHOT
+
+  # Configurazione MongoDB
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://localhost:27017/console
+
+  # JPA configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+# Configurazione gRPC client
+grpc:
+  client:
+    # Contract Manager
+    contract-manager-service:
+      address: localhost:9091
+      negotiation-type: plaintext
+
+    # Customer Manager
+    customer-manager-service:
+      address: localhost:9092
+      negotiation-type: plaintext
+
+    # Pricing Manager
+    pricing-manager-service:
+      address: localhost:9093
+      negotiation-type: plaintext
+
+# Logging
+logging:
+  level:
+    root: INFO
+    it.salspa: DEBUG
+
