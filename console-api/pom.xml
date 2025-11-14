@@ -13,31 +13,23 @@
     <name>Console API - Applicazione eseguibile</name>
     <description>Applicazione Spring Boot console per il coordinamento dei servizi gRPC</description>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
-        <!-- Dipendenze interne -->
+        <!-- ==================== Internal Dependencies ==================== -->
+        <!-- gRPC Clients for all microservices -->
         <dependency>
             <groupId>it.salspa</groupId>
             <artifactId>contract-manager-client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>it.salspa</groupId>
             <artifactId>customer-manager-client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>it.salspa</groupId>
             <artifactId>pricing-manager-client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
-        <!-- Spring Boot starters -->
+        <!-- ==================== Spring Boot Starters ==================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -51,14 +43,14 @@
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
 
-        <!-- gRPC client -->
+        <!-- ==================== gRPC Client ==================== -->
+        <!-- gRPC Client for calling microservices -->
         <dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-client-spring-boot-starter</artifactId>
-            <version>${grpc.springboot.starter.version}</version>
         </dependency>
 
-        <!-- Utilità opzionali -->
+        <!-- ==================== Development & Runtime ==================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>

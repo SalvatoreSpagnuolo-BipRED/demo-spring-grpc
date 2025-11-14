@@ -14,25 +14,17 @@
     <description>Client gRPC per il servizio Pricing Manager</description>
     <packaging>jar</packaging>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
-        <!-- Dipendenze della API (protobuf definitions) -->
+        <!-- Internal API Dependency -->
         <dependency>
             <groupId>it.salspa</groupId>
             <artifactId>pricing-manager-api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
-        <!-- gRPC client per la comunicazione -->
+        <!-- Spring Boot gRPC Client Integration -->
         <dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-client-spring-boot-starter</artifactId>
-            <version>${grpc.springboot.starter.version}</version>
         </dependency>
     </dependencies>
 

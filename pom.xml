@@ -34,11 +34,27 @@
 		<url/>
 	</scm>
 	<properties>
+		<!-- Java & Compiler Properties -->
 		<java.version>17</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- gRPC & Protobuf Core Versions -->
 		<grpc.version>1.76.0</grpc.version>
-		<protobuf-java.version>4.32.1</protobuf-java.version>
-        <grpc.springboot.starter.version>2.15.0.RELEASE</grpc.springboot.starter.version>
-    </properties>
+		<protobuf.version>4.32.1</protobuf.version>
+		<protoc.version>4.32.1</protoc.version>
+
+		<!-- Spring gRPC Integration -->
+		<grpc-spring-boot-starter.version>2.15.0.RELEASE</grpc-spring-boot-starter.version>
+
+		<!-- Build Plugins Versions -->
+		<protobuf-maven-plugin.version>3.8.0</protobuf-maven-plugin.version>
+		<protoc-gen-grpc-java.version>${grpc.version}</protoc-gen-grpc-java.version>
+
+		<!-- Annotations -->
+		<javax.annotation-api.version>1.3.2</javax.annotation-api.version>
+	</properties>
 	<!-- Dipendenze comuni a TUTTI i moduli - solo utilità -->
 	<dependencies>
 		<dependency>
@@ -60,13 +76,104 @@
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
-			<!-- Importa le dipendenze gestite da Spring Boot -->
+			<!-- Spring Boot BOM -->
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
 				<version>3.5.7</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+
+			<!-- ==================== gRPC Core Dependencies ==================== -->
+			<!-- Protocol Buffers -->
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>${protobuf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java-util</artifactId>
+				<version>${protobuf.version}</version>
+			</dependency>
+
+			<!-- gRPC Core Libraries (io.grpc) -->
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-protobuf</artifactId>
+				<version>${grpc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-stub</artifactId>
+				<version>${grpc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-netty-shaded</artifactId>
+				<version>${grpc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-services</artifactId>
+				<version>${grpc.version}</version>
+			</dependency>
+
+			<!-- ==================== Spring Boot gRPC Integration (net.devh) ==================== -->
+			<dependency>
+				<groupId>net.devh</groupId>
+				<artifactId>grpc-server-spring-boot-starter</artifactId>
+				<version>${grpc-spring-boot-starter.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.devh</groupId>
+				<artifactId>grpc-client-spring-boot-starter</artifactId>
+				<version>${grpc-spring-boot-starter.version}</version>
+			</dependency>
+
+			<!-- ==================== Internal Modules ==================== -->
+			<!-- Contract Manager -->
+			<dependency>
+				<groupId>it.salspa</groupId>
+				<artifactId>contract-manager-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>it.salspa</groupId>
+				<artifactId>contract-manager-client</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- Customer Manager -->
+			<dependency>
+				<groupId>it.salspa</groupId>
+				<artifactId>customer-manager-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>it.salspa</groupId>
+				<artifactId>customer-manager-client</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- Pricing Manager -->
+			<dependency>
+				<groupId>it.salspa</groupId>
+				<artifactId>pricing-manager-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>it.salspa</groupId>
+				<artifactId>pricing-manager-client</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- ==================== Annotations ==================== -->
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>${javax.annotation-api.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -88,6 +195,7 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
+				<!-- Spring Boot Maven Plugin - Per moduli executable -->
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
@@ -99,6 +207,34 @@
 							</exclude>
 						</excludes>
 					</configuration>
+				</plugin>
+
+				<!-- Protobuf Maven Plugin - Per moduli API -->
+				<plugin>
+					<groupId>io.github.ascopes</groupId>
+					<artifactId>protobuf-maven-plugin</artifactId>
+					<version>${protobuf-maven-plugin.version}</version>
+					<configuration>
+						<protocVersion>${protoc.version}</protocVersion>
+						<!-- Plugin gRPC per generare service stubs -->
+						<binaryMavenPlugins>
+							<binaryMavenPlugin>
+								<groupId>io.grpc</groupId>
+								<artifactId>protoc-gen-grpc-java</artifactId>
+								<version>${protoc-gen-grpc-java.version}</version>
+								<!-- Omette annotazione @Generated per compatibilità Java 9+ -->
+								<options>@generated=omit</options>
+							</binaryMavenPlugin>
+						</binaryMavenPlugins>
+					</configuration>
+					<executions>
+						<execution>
+							<id>generate-protobuf-sources</id>
+							<goals>
+								<goal>generate</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>
