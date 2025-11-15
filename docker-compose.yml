@@ -1,0 +1,54 @@
+version: '3.8'
+
+# Docker Compose principale per avviare TUTTI i database manualmente
+
+services:
+  mongodb-console:
+    image: mongo:6.0
+    container_name: mongodb-console
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: console
+    volumes:
+      - mongodb-console-data:/data/db
+    restart: unless-stopped
+
+  mongodb-contract:
+    image: mongo:6.0
+    container_name: mongodb-contract
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: contract
+    volumes:
+      - mongodb-contract-data:/data/db
+    restart: unless-stopped
+
+#  mongodb-customer:
+#    image: mongo:6.0
+#    container_name: mongodb-customer
+#    ports:
+#      - "27019:27017"
+#    environment:
+#      MONGO_INITDB_DATABASE: customer
+#    volumes:
+#      - mongodb-customer-data:/data/db
+#    restart: unless-stopped
+#
+#  mongodb-pricing:
+#    image: mongo:6.0
+#    container_name: mongodb-pricing
+#    ports:
+#      - "27020:27017"
+#    environment:
+#      MONGO_INITDB_DATABASE: pricing
+#    volumes:
+#      - mongodb-pricing-data:/data/db
+#    restart: unless-stopped
+
+volumes:
+  mongodb-console-data:
+  mongodb-contract-data:
+#  mongodb-customer-data:
+#  mongodb-pricing-data:

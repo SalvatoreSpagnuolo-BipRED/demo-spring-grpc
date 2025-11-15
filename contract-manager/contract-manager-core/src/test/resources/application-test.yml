@@ -3,26 +3,11 @@ spring:
   application:
     name: contract-manager-core
 
-  # Datasource H2 per i test
-  datasource:
-    url: jdbc:h2:mem:testdb;MODE=MySQL
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-
   # Configurazione MongoDB per i test
   data:
     mongodb:
       auto-index-creation: true
       uri: mongodb://localhost:27017/test-contract
-
-  # Database JPA per i test
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: create-drop
-    database: H2
-    show-sql: false
 
 # Configurazione gRPC server
 grpc:

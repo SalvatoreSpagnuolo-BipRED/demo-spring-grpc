@@ -8,13 +8,7 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
-      uri: mongodb://localhost:27017/pricing
-
-  # JPA configuration
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: false
+      uri: mongodb://localhost:27020/pricing
 
 # Configurazione gRPC server
 grpc:

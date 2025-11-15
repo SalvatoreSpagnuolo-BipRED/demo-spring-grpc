@@ -8,13 +8,7 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
-      uri: mongodb://localhost:27017/contract
-
-  # JPA configuration
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: false
+      uri: mongodb://localhost:27018/contract
 
 # Configurazione gRPC server
 grpc:
@@ -25,11 +19,11 @@ grpc:
 
   # Client per comunicare con altri servizi
   client:
-    customer-manager-service:
+    customer-manager:
       address: localhost:9092
       negotiation-type: plaintext
 
-    pricing-manager-service:
+    pricing-manager:
       address: localhost:9093
       negotiation-type: plaintext
 

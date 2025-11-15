@@ -10,27 +10,19 @@ spring:
       auto-index-creation: true
       uri: mongodb://localhost:27017/console
 
-  # JPA configuration
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: false
+server:
+  port: 8080
 
 # Configurazione gRPC client
 grpc:
   client:
-    # Contract Manager
-    contract-manager-service:
+    contract-manager:
       address: localhost:9091
       negotiation-type: plaintext
-
-    # Customer Manager
-    customer-manager-service:
+    customer-manager:
       address: localhost:9092
       negotiation-type: plaintext
-
-    # Pricing Manager
-    pricing-manager-service:
+    pricing-manager:
       address: localhost:9093
       negotiation-type: plaintext
 
