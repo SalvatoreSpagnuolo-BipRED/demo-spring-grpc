@@ -16,25 +16,25 @@
 
     <!-- Dipendenze minime per la generazione protobuf -->
     <dependencies>
-        <!-- Protocol Buffers - Runtime -->
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-        </dependency>
 
-        <!-- gRPC Core - Protobuf Integration -->
+        <!-- gRPC Core - Generated Stubs -->
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
         </dependency>
-
-        <!-- gRPC Core - Generated Stubs -->
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-stub</artifactId>
         </dependency>
 
+        <!-- Protobuf - Explicit version to override transitive dependency -->
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+        </dependency>
+
         <!-- Annotations for Generated Code -->
+        <!-- gRPC generated code uses javax.annotation.Generated -->
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
@@ -42,13 +42,19 @@
     </dependencies>
 
     <build>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>${os-maven-plugin.version}</version>
+            </extension>
+        </extensions>
         <plugins>
-            <!-- Protobuf Code Generation Plugin -->
+            <!-- Eredita configurazione completa dal parent -->
             <plugin>
-                <groupId>io.github.ascopes</groupId>
+                <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
-
 </project>

@@ -44,18 +44,6 @@
             <artifactId>grpc-server-spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- gRPC Client for calling other services -->
-        <dependency>
-            <groupId>net.devh</groupId>
-            <artifactId>grpc-client-spring-boot-starter</artifactId>
-        </dependency>
-
-        <!-- gRPC Services (Health check, Reflection) -->
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-services</artifactId>
-        </dependency>
-
         <!-- ==================== Development & Runtime ==================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -67,17 +55,10 @@
 
     <build>
         <plugins>
+            <!-- Eredita configurazione completa dal parent -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
             </plugin>
         </plugins>
     </build>
