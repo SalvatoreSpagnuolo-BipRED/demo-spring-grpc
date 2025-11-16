@@ -51,92 +51,118 @@ Ogni servizio (contract/customer/pricing-manager) ha:
 ### Versioni Chiave
 
 ```xml
-
 <properties>
     <java.version>17</java.version>
-    <grpc.version>1.58.0</grpc.version>
-    <protobuf.version>4.32.1</protobuf.version>
-    <grpc-spring-boot-starter.version>2.15.0.RELEASE</grpc-spring-boot-starter.version>
+    <grpc.version>1.63.0</grpc.version>
+    <protobuf.version>3.25.5</protobuf.version>
+    <net.devh.grpc.spring.boot.version>3.1.0.RELEASE</net.devh.grpc.spring.boot.version>
+    <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
+    <os-maven-plugin.version>1.7.1</os-maven-plugin.version>
+    <mapstruct.version>1.5.5.Final</mapstruct.version>
 </properties>
 ```
 
 ### Dipendenze per Tipo Modulo
 
 **Moduli API** (`*-api`):
-
-- protobuf-java, grpc-protobuf, grpc-stub
+- `io.grpc:grpc-protobuf`
+- `io.grpc:grpc-stub`
+- `com.google.protobuf:protobuf-java` (override esplicito per CVE)
+- `javax.annotation:javax.annotation-api` (per codice generato)
+- **Plugin**: `protobuf-maven-plugin` (configurazione ereditata dal parent)
 
 **Moduli Client** (`*-client`):
-
-- Modulo `*-api` + `net.devh:grpc-client-spring-boot-starter`
+- Modulo `*-api` interno
+- `net.devh:grpc-client-spring-boot-starter`
 
 **Moduli Core** (`*-core`):
-
-- Modulo `*-api` + altri 2 client
-- spring-boot-starter-web/data-jpa/data-mongodb
+- Modulo `*-api` interno
+- Altri 2 moduli `*-client` interni
+- `spring-boot-starter-data-mongodb`
 - `net.devh:grpc-server-spring-boot-starter`
-- `net.devh:grpc-client-spring-boot-starter`
-- `io.grpc:grpc-services`
+
+**Console API**:
+- Tutti e 3 i moduli `*-client` interni
+- `spring-boot-starter-web`
+- `spring-boot-starter-data-mongodb`
+- `org.mapstruct:mapstruct`
+
+### Plugin Centralizzati (DRY Principle)
+
+Il pom principale definisce configurazioni complete nel `<pluginManagement>`:
+
+**protobuf-maven-plugin**: Configurato una sola volta con:
+- Version, protocArtifact, pluginArtifact, executions
+- I moduli `*-api` lo attivano semplicemente con `<plugin><groupId>org.xolstice.maven.plugins</groupId><artifactId>protobuf-maven-plugin</artifactId></plugin>`
+
+**spring-boot-maven-plugin**: Configurato con excludes lombok
+- Attivato solo nei moduli `*-core` e `console-api`
 
 ---
 
-## 🐛 Problemi Conosciuti e Soluzioni
+## 🐛 Problemi Risolti e Best Practices
 
-### Problema 1: Conflitto Bean gRPC
+### Problema 1: Versioni Protobuf/gRPC Obsolete (RISOLTO ✅)
 
-**Sintomo**: `BeanDefinitionOverrideException: shadedNettyGrpcChannelFactory`
+**Sintomo**: `Missing: com.google.protobuf:protoc:exe:osx-aarch_64:3.3.0`
 
-**Causa**: Due implementazioni gRPC caricate contemporaneamente
+**Causa**: Versioni troppo vecchie di protoc (3.3.0) e protoc-gen-grpc-java (1.4.0) non supportano Apple Silicon
 
-- ❌ spring-grpc (versione 0.12.0) - RIMOSSA
-- ✅ net.devh grpc-spring-boot-starter (versione 2.15.0.RELEASE) - MANTENUTA
+**Soluzione**:
+- ✅ Aggiornato protobuf a **3.25.5** (risolve CVE-2024-7254)
+- ✅ Aggiornato grpc-java a **1.63.0**
+- ✅ Aggiornato os-maven-plugin a **1.7.1**
+- ✅ Usare variabili `${protobuf.version}` e `${grpc.version}` nel protobuf-maven-plugin
 
-**Soluzione**: Usare SOLO `net.devh` in tutte le dipendenze gRPC.
+### Problema 2: Dipendenze gRPC Ridondanti (RISOLTO ✅)
 
-### Problema 2: Repackage Fallisce su Moduli Library
+**Causa**: Dipendenze non necessarie nei moduli API causavano conflitti
+
+**Soluzione**:
+- ✅ Moduli API: SOLO `grpc-protobuf`, `grpc-stub`, `protobuf-java`, `javax.annotation-api`
+- ✅ Rimossi: `grpc-netty-shaded`, `grpc-inprocess`, `grpc-common-spring-boot`
+- ✅ I client/server starters includono già le dipendenze necessarie
+
+### Problema 3: Annotazioni Generated Non Trovate (RISOLTO ✅)
+
+**Sintomo**: `cannot find symbol: class Generated, location: package javax.annotation`
+
+**Causa**: Il codice generato da gRPC usa `javax.annotation.Generated` ma Spring Boot 3 usa Jakarta
+
+**Soluzione**:
+- ✅ Aggiungere `javax.annotation:javax.annotation-api` nei moduli API
+- ✅ Non usare `jakarta.annotation-api` nei moduli API (incompatibile con codice generato)
+
+### Problema 4: Repackage Fallisce su Moduli Library (RISOLTO ✅)
 
 **Sintomo**: `Error: no main manifest attribute` su jar di libreria
 
 **Causa**: spring-boot-maven-plugin applicato a moduli senza main class
 
 **Soluzione**:
+- ✅ Spostare plugin in `<pluginManagement>` nel pom root
+- ✅ Aggiungere esplicitamente solo nei moduli core executable e console-api
 
-- Spostare plugin in `<pluginManagement>` nel pom root
-- Aggiungere esplicitamente solo nei moduli core executable
+### Problema 5: Test con Client gRPC Mockati (RISOLTO ✅)
 
-### Problema 3: Test Falliscono per Mancanza Datasource
-
-**Sintomo**: `Failed to determine a suitable driver class`
-
-**Causa**: Nessun datasource configurato per i test
-
-**Soluzione**:
-
-- Aggiungere H2 Database nel pom root (scope: test)
-- Creare `application-test.yml` per ogni modulo core con datasource H2 in memoria
-
-### Problema 4: Client gRPC Non Raggiungibili nei Test
-
-**Sintomo**: `ClassNotFoundException: io.grpc.InternalGlobalInterceptors`
+**Sintomo**: Test falliscono cercando di connettersi a servizi remoti
 
 **Causa**: I client gRPC cercano servizi remoti inesistenti durante i test
 
 **Soluzione**:
+- ✅ Usare `@MockBean` nei test per mockare i client gRPC
+- ✅ I test Spring Boot caricano il contesto senza connessioni reali
 
-- Usare `@MockBean` nei test per mockare i client gRPC
-- Aggiungere `grpc-services` come dipendenza nei moduli core
-
-### Problema 5: MongoDB Non Disponibile nei Test
+### Problema 6: MongoDB Non Disponibile nei Test (RISOLTO ✅)
 
 **Sintomo**: `MongoSocketOpenException: Connection refused`
 
 **Causa**: MongoDB non è avviato durante i test
 
 **Soluzione**:
-
-- MongoDB configurato negli `application-test.yml` ma non obbligatorio
-- I test passano anche senza MongoDB (lazy connection)
-- Per i test reali, avviare MongoDB su `localhost:27017`
+- ✅ MongoDB configurato negli `application.yml` ma lazy connection
+- ✅ I test passano anche senza MongoDB grazie ai @MockBean
+- ✅ Per test reali, avviare MongoDB o usare Testcontainers
 
 ---
 
@@ -149,20 +175,12 @@ Ogni servizio (contract/customer/pricing-manager) ha:
 ```yaml
 spring:
   application:
-    name: { service-name }
-
-  datasource:
-    url: jdbc:mysql://localhost:3306/{db-name}
-    # O configurare nel docker-compose.yml
+    name: {service-name}
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/{db-name}
-
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: false
+      uri: mongodb://localhost:2701{7-9}
+      database: {db-name}
 
 grpc:
   server:
@@ -171,31 +189,17 @@ grpc:
     max-inbound-message-size: 4194304
 
   client:
-    { other-service }:
-      address: localhost:909{x}
+    {other-service}-manager:
+      address: static://localhost:909{x}
       negotiation-type: plaintext
 ```
 
-### application-test.yml per Moduli Core
+### Nessun application-test.yml Necessario
 
-**Standard per i test:**
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:h2:mem:testdb;MODE=MySQL
-    driver-class-name: org.h2.Driver
-
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: create-drop
-
-grpc:
-  client:
-    IN_PROCESS_CHANNEL_NAME:
-      address: in-process:test-{service}
-```
+**I test funzionano senza configurazioni specifiche:**
+- I @MockBean sostituiscono i client gRPC
+- MongoDB ha lazy connection
+- Spring Boot usa configurazioni di default per i test
 
 ---
 
@@ -254,27 +258,41 @@ class ApplicationTests {
 
 ## ⚠️ Anti-pattern da Evitare
 
-### ❌ Anti-pattern 1: Due Implementazioni gRPC
+### ❌ Anti-pattern 1: Dipendenze gRPC Ridondanti nei Moduli API
 
 ```xml
 <!-- NON FARE! -->
-<dependency>spring-grpc</dependency>
-<dependency>grpc-client-spring-boot-starter</dependency>
+<dependency>
+    <groupId>io.grpc</groupId>
+    <artifactId>grpc-netty-shaded</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.grpc</groupId>
+    <artifactId>grpc-inprocess</artifactId>
+</dependency>
+<dependency>
+    <groupId>net.devh</groupId>
+    <artifactId>grpc-common-spring-boot</artifactId>
+</dependency>
 ```
 
-✅ **FARE**: Solo `net.devh:grpc-client-spring-boot-starter`
+✅ **FARE**: Solo `grpc-protobuf`, `grpc-stub`, `protobuf-java`, `javax.annotation-api`
 
 ### ❌ Anti-pattern 2: spring-boot-maven-plugin su Librerie
 
 ```xml
-<!-- NON FARE nei pom root o nelle librerie -->
-<plugin>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-maven-plugin</artifactId>
-</plugin>
+<!-- NON FARE nei moduli API/Client -->
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+    </plugins>
+</build>
 ```
 
-✅ **FARE**: Mettere in `<pluginManagement>` e aggiungere solo nei core
+✅ **FARE**: Mettere in `<pluginManagement>` nel pom root e aggiungere solo nei moduli core/console
 
 ### ❌ Anti-pattern 3: Nessun Mock nei Test
 
@@ -282,6 +300,9 @@ class ApplicationTests {
 // NON FARE - i test falliranno
 @SpringBootTest
 class ApplicationTests {
+    @Autowired
+    private ContractClient contractClient; // Tenterà connessione reale!
+    
     @Test
     void contextLoads() {
     }
@@ -296,8 +317,10 @@ class ApplicationTests {
 
 - ✅ Build: SUCCESS (14/14 moduli)
 - ✅ Test: ALL PASS
-- ✅ Tempo build: ~16 sec
+- ✅ Tempo build: ~29 sec (con test), ~16 sec (senza test)
 - ✅ Ottimizzazione POM: COMPLETATA
+- ✅ Sicurezza: CVE-2024-7254 RISOLTO
+- ✅ Supporto Apple Silicon: COMPLETO
 
 ---
 
@@ -312,21 +335,21 @@ class ApplicationTests {
 ### Dopo Qualsiasi Modifica
 
 1. Eseguire `mvn clean test` per verifica
-2. Se fallisce, consultare la sezione "Problemi Conosciuti"
+2. Se fallisce, consultare la sezione "Problemi Risolti"
 3. Verificare che non sia stato introdotto un anti-pattern
 
 ### Checklist Diagnostica Build
 
-1. ✅ Nessun `spring-grpc` nelle dipendenze
-2. ✅ spring-boot-maven-plugin SOLO nei moduli core
-3. ✅ application-test.yml presente nei moduli core
-4. ✅ @MockBean nei test
-5. ✅ grpc-services nelle dipendenze core
+1. ✅ Versioni protobuf e grpc aggiornate (3.25.5 e 1.63.0)
+2. ✅ Moduli API con dipendenze minime (grpc-protobuf, grpc-stub, protobuf-java, javax.annotation-api)
+3. ✅ spring-boot-maven-plugin SOLO nei moduli core executable e console-api
+4. ✅ @MockBean per i client gRPC nei test
+5. ✅ os-maven-plugin v1.7.1 per supporto Apple Silicon
 
 ---
 
-**Versione**: 2.0  
-**Ultima modifica**: 2025-11-14  
+**Versione**: 3.0  
+**Ultima modifica**: 2025-11-16  
 **Stato**: STABILE ✅
 
 

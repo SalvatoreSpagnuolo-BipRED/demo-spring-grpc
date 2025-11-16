@@ -19,14 +19,6 @@
         <!-- gRPC Core - Generated Stubs -->
         <dependency>
             <groupId>io.grpc</groupId>
-            <artifactId>grpc-netty-shaded</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-inprocess</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
         </dependency>
         <dependency>
@@ -34,13 +26,14 @@
             <artifactId>grpc-stub</artifactId>
         </dependency>
 
-        <!-- Spring Boot gRPC Integration (net.devh) -->
+        <!-- Protobuf - Explicit version to override transitive dependency -->
         <dependency>
-            <groupId>net.devh</groupId>
-            <artifactId>grpc-common-spring-boot</artifactId>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
         </dependency>
 
         <!-- Annotations for Generated Code -->
+        <!-- gRPC generated code uses javax.annotation.Generated -->
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
@@ -52,31 +45,14 @@
             <extension>
                 <groupId>kr.motd.maven</groupId>
                 <artifactId>os-maven-plugin</artifactId>
-                <version>1.6.1</version>
+                <version>${os-maven-plugin.version}</version>
             </extension>
         </extensions>
         <plugins>
+            <!-- Eredita configurazione completa dal parent -->
             <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
-                <version>0.6.1</version>
-                <configuration>
-                    <protocArtifact>
-                        com.google.protobuf:protoc:3.3.0:exe:${os.detected.classifier}
-                    </protocArtifact>
-                    <pluginId>grpc-java</pluginId>
-                    <pluginArtifact>
-                        io.grpc:protoc-gen-grpc-java:1.4.0:exe:${os.detected.classifier}
-                    </pluginArtifact>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>compile-custom</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
