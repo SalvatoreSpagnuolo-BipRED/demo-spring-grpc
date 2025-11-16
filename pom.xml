@@ -173,21 +173,28 @@
 
     <build>
         <plugins>
+            <!-- Configurazione base per TUTTI i moduli -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
             </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
+                <!-- Maven Compiler Plugin - Configurazione base per tutti i moduli -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+
                 <!-- Spring Boot Maven Plugin - Per moduli executable -->
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
