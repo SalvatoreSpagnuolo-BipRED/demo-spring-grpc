@@ -37,23 +37,11 @@
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
 
-        <!-- ==================== gRPC Server & Client ==================== -->
+        <!-- ==================== gRPC Server ==================== -->
         <!-- gRPC Server for exposing services -->
         <dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-server-spring-boot-starter</artifactId>
-        </dependency>
-
-        <!-- gRPC Client for calling other services -->
-        <dependency>
-            <groupId>net.devh</groupId>
-            <artifactId>grpc-client-spring-boot-starter</artifactId>
-        </dependency>
-
-        <!-- gRPC Services (Health check, Reflection) -->
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-services</artifactId>
         </dependency>
 
         <!-- ==================== Development & Runtime ==================== -->
