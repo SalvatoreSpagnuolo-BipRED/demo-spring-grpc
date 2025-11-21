@@ -1,8 +1,7 @@
 package it.salspa.demo.spring.grpc.pricing.client;
 
-import it.salspa.demo.spring.grpc.pricing.api.PriceRequest;
-import it.salspa.demo.spring.grpc.pricing.api.PriceResponse;
-import it.salspa.demo.spring.grpc.pricing.api.PricingServiceGrpc;
+import com.google.protobuf.Empty;
+import it.salspa.demo.spring.grpc.pricing.api.*;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Component;
 
@@ -12,11 +11,31 @@ public class PricingClient {
     @GrpcClient("pricing-manager")
     private PricingServiceGrpc.PricingServiceBlockingStub blockingStub;
 
-    public PriceResponse calculate(String product, int quantity) {
-        PriceRequest request = PriceRequest.newBuilder()
-                .setProductCode(product)
-                .setQuantity(quantity)
-                .build();
+    public PriceCodeResponse create(CreatePriceRequest request) {
+        return blockingStub.createPrice(request);
+    }
+
+    public PriceCodeResponse update(UpdatePriceRequest request) {
+        return blockingStub.updatePrice(request);
+    }
+
+    public PriceResponse get(PriceCodeRequest request) {
+        return blockingStub.getPrice(request);
+    }
+
+    public EmptyResponse delete(PriceCodeRequest request) {
+        return blockingStub.deletePrice(request);
+    }
+
+    public PriceListResponse list() {
+        return blockingStub.listPrice(Empty.getDefaultInstance());
+    }
+
+    public EmptyResponse associatePriceToContractProduct(AssociatePriceToContractProductRequest request) {
+        return blockingStub.associatePriceToContractProduct(request);
+    }
+
+    public CalculatePriceResponse calculatePrice(CalculatePriceRequest request) {
         return blockingStub.calculatePrice(request);
     }
 }

@@ -1,20 +1,82 @@
 syntax = "proto3";
+
 package demo.contract.api;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
 option java_package = "it.salspa.demo.spring.grpc.contract.api";
 option java_multiple_files = true;
 option java_outer_classname = "ContractApiProto";
 
 service ContractService {
-  rpc CreateContract (CreateContractRequest) returns (ContractResponse);
+    rpc CreateContract (CreateContractRequest) returns (ContractCodeResponse);
+    rpc UpdateContract (UpdateContractRequest) returns (ContractCodeResponse);
+    rpc GetContract (ContractCodeRequest) returns (ContractDetailResponse);
+    rpc DeleteContract (ContractCodeRequest) returns (EmptyResponse);
+    rpc ListContract (google.protobuf.Empty) returns (ListContractsResponse);
+    rpc ActivateContract (ContractCodeRequest) returns (EmptyResponse);
+    rpc DeactivateContract (ContractCodeRequest) returns (EmptyResponse);
+    rpc AddUsageToContractProduct (AddUsageToContractProductRequest) returns (EmptyResponse);
 }
 
 message CreateContractRequest {
-  string contract_name = 1;
-  string contract_details = 2;
+    string customer_id = 1;
+    repeated Product products = 2;
+    google.protobuf.Timestamp start_date = 3;
+    google.protobuf.Timestamp end_date = 4;
 }
 
-message ContractResponse {
-  string code = 1;
-  int32 version = 2;
+message UpdateContractRequest {
+    ContractStatus status = 1;
+    repeated Product products = 2;
+    google.protobuf.Timestamp start_date = 3;
+    google.protobuf.Timestamp end_date = 4;
+}
+
+message ContractDetailResponse {
+    string code = 1;
+    int32 version = 2;
+    string customer_id = 3;
+    ContractStatus status = 4;
+    repeated Product products = 5;
+    google.protobuf.Timestamp start_date = 6;
+    google.protobuf.Timestamp end_date = 7;
+}
+
+message ListContractsResponse {
+    repeated ContractDetailResponse contracts = 1;
+}
+
+message AddUsageToContractProductRequest {
+    string contract_code = 1;
+    string product_id = 2;
+    double usage_amount = 3;
+}
+
+message Product {
+    string product_id = 1;
+    int32 pricing_id = 3;
+}
+
+message ContractCodeResponse {
+    string code = 1;
+    int32 version = 2;
+}
+
+message ContractCodeRequest {
+    string code = 1;
+    int32 version = 2;
+}
+
+message EmptyResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+enum ContractStatus {
+    CONTRACT_STATUS_ACTIVE = 0;
+    CONTRACT_STATUS_INACTIVE = 1;
+    CONTRACT_STATUS_PENDING = 2;
 }
 

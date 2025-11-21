@@ -1,21 +1,86 @@
 syntax = "proto3";
+
 package demo.pricing.api;
+
+import "google/protobuf/empty.proto";
+
 option java_package = "it.salspa.demo.spring.grpc.pricing.api";
 option java_multiple_files = true;
 option java_outer_classname = "PricingApiProto";
 
 service PricingService {
-  rpc CalculatePrice (PriceRequest) returns (PriceResponse);
+    rpc CreatePrice (CreatePriceRequest) returns (PriceCodeResponse);
+    rpc UpdatePrice (UpdatePriceRequest) returns (PriceCodeResponse);
+    rpc GetPrice (PriceCodeRequest) returns (PriceResponse);
+    rpc DeletePrice (PriceCodeRequest) returns (EmptyResponse);
+    rpc ListPrice (google.protobuf.Empty) returns (PriceListResponse);
+    rpc AssociatePriceToContractProduct (AssociatePriceToContractProductRequest) returns (EmptyResponse);
+    rpc CalculatePrice (CalculatePriceRequest) returns (CalculatePriceResponse);
 }
 
-message PriceRequest {
-  string product_code = 1;
-  int32 quantity = 2;
+message CreatePriceRequest {
+    PricingFrequency period = 2;
+    repeated Bracket pricing_brackets = 3;
+}
+
+message UpdatePriceRequest {
+    string code = 1;
+    PricingFrequency period = 2;
+    repeated Bracket pricing_brackets = 3;
 }
 
 message PriceResponse {
-  string product_code = 1;
-  int32 quantity = 2;
-  double total_price = 3;
+    string code = 1;
+    PricingFrequency period = 2;
+    repeated Bracket pricing_brackets = 3;
+}
+
+message PriceListResponse {
+    repeated PriceResponse prices = 1;
+}
+
+message AssociatePriceToContractProductRequest {
+    string price_code = 1;
+    string contract_code = 2;
+    string product_code = 3;
+}
+
+message CalculatePriceRequest {
+    string contract_code = 1;
+    string product_code = 2;
+    double quantity = 3;
+}
+
+message CalculatePriceResponse {
+    string contract_code = 1;
+    string product_code = 2;
+    PricingFrequency period = 3;
+    Bracket pricing_bracket = 4;
+    double total_price = 5;
+}
+
+message Bracket {
+    int32 order = 1;
+    double min_quantity = 2;
+    optional double max_quantity = 3;
+    double unit_price = 4;
+}
+
+message PriceCodeRequest {
+    string code = 1;
+}
+
+message PriceCodeResponse {
+    string code = 1;
+}
+
+message EmptyResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+enum PricingFrequency {
+    MONTHLY = 0;
+    YEARLY = 1;
 }
 

@@ -1,8 +1,7 @@
 package it.salspa.demo.spring.grpc.console.service;
 
-import it.salspa.demo.spring.grpc.console.dto.ContractResponseDTO;
+import it.salspa.demo.spring.grpc.console.dto.ContractCodeResponseDTO;
 import it.salspa.demo.spring.grpc.console.mapper.ContractMapper;
-import it.salspa.demo.spring.grpc.contract.api.ContractResponse;
 import it.salspa.demo.spring.grpc.contract.client.ContractClient;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +16,7 @@ public class ContractService {
         this.contractMapper = contractMapper;
     }
 
-    public ContractResponseDTO create(String name, String details) {
-        ContractResponse contractResponse = contractClient.create(name, details);
-        return contractMapper.toContractResponseDTO(contractResponse);
+    public ContractCodeResponseDTO create(/* to implement */) {
+        return null;
     }
 }
