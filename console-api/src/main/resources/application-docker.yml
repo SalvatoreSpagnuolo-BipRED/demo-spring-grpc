@@ -1,0 +1,23 @@
+# Configurazione Docker per console-api
+# Questo profilo viene attivato quando si esegue con --spring.profiles.active=docker
+
+spring:
+  # Configurazione MongoDB per Docker (Replica Set)
+  data:
+    mongodb:
+      uri: mongodb://mongodb-console:27017/console?replicaSet=rs-console
+
+# Configurazione gRPC client per Docker
+grpc:
+  client:
+    contract-manager:
+      address: contract-manager-core:9091
+      negotiation-type: plaintext
+    # customer-manager e pricing-manager non sono ancora attivi
+    # Manteniamo la configurazione locale che verrà ignorata se i servizi non sono disponibili
+    customer-manager:
+      address: localhost:9092
+      negotiation-type: plaintext
+    pricing-manager:
+      address: localhost:9093
+      negotiation-type: plaintext

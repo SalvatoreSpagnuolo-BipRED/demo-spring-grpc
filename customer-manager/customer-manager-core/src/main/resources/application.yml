@@ -8,7 +8,7 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
-      uri: mongodb://localhost:27019/customer
+      uri: mongodb://localhost:27019/customer?retryWrites=false
 
 # Configurazione gRPC server
 grpc:

@@ -1,11 +1,14 @@
 version: '3.8'
 
-# Docker Compose principale per avviare TUTTI i database manualmente
+# Docker Compose per avviare console-api, contract-manager e i relativi database MongoDB
 
 services:
+  # ==================== Database Services ====================
+  # MongoDB Replica Set per console-api
   mongodb-console:
     image: mongo:6.0
     container_name: mongodb-console
+    command: ["--replSet", "rs-console", "--bind_ip_all"]
     ports:
       - "27017:27017"
     environment:
@@ -13,10 +16,21 @@ services:
     volumes:
       - mongodb-console-data:/data/db
     restart: unless-stopped
+    networks:
+      - demo-network
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs-console',members:[{_id:0,host:'mongodb-console:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
 
+  # MongoDB Replica Set per contract-manager
   mongodb-contract:
     image: mongo:6.0
     container_name: mongodb-contract
+    command: ["--replSet", "rs-contract", "--bind_ip_all"]
     ports:
       - "27018:27017"
     environment:
@@ -24,6 +38,15 @@ services:
     volumes:
       - mongodb-contract-data:/data/db
     restart: unless-stopped
+    networks:
+      - demo-network
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs-contract',members:[{_id:0,host:'mongodb-contract:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
 
 #  mongodb-customer:
 #    image: mongo:6.0
@@ -35,6 +58,8 @@ services:
 #    volumes:
 #      - mongodb-customer-data:/data/db
 #    restart: unless-stopped
+#    networks:
+#      - demo-network
 #
 #  mongodb-pricing:
 #    image: mongo:6.0
@@ -46,9 +71,49 @@ services:
 #    volumes:
 #      - mongodb-pricing-data:/data/db
 #    restart: unless-stopped
+#    networks:
+#      - demo-network
+
+  # ==================== Microservices ====================
+  contract-manager-core:
+    build:
+      context: .
+      dockerfile: contract-manager/contract-manager-core/Dockerfile
+    container_name: contract-manager-core
+    ports:
+      - "9091:9091"
+    environment:
+      # Attiva il profilo Docker che configura le connessioni ai servizi Docker
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongodb-contract
+    restart: unless-stopped
+    networks:
+      - demo-network
+
+  console-api:
+    build:
+      context: .
+      dockerfile: console-api/Dockerfile
+    container_name: console-api
+    ports:
+      - "8080:8080"
+    environment:
+      # Attiva il profilo Docker che configura le connessioni ai servizi Docker
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongodb-console
+      - contract-manager-core
+    restart: unless-stopped
+    networks:
+      - demo-network
 
 volumes:
   mongodb-console-data:
   mongodb-contract-data:
 #  mongodb-customer-data:
 #  mongodb-pricing-data:
+
+networks:
+  demo-network:
+    driver: bridge

@@ -8,7 +8,7 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
-      uri: mongodb://localhost:27017/console
+      uri: mongodb://localhost:27017/console?retryWrites=false
 
 server:
   port: 8080
@@ -31,4 +31,21 @@ logging:
   level:
     root: INFO
     it.salspa: DEBUG
+
+# OpenAPI / Swagger UI Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+  info:
+    title: Console API - gRPC Orchestrator
+    version: 0.0.1-SNAPSHOT
+    description: REST API orchestrator for Contract, Customer, and Pricing microservices
+    contact:
+      name: Demo Spring gRPC Team
 

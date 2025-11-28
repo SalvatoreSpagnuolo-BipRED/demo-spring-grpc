@@ -43,6 +43,9 @@
         <!-- Mapstruct -->
         <mapstruct.version>1.5.5.Final</mapstruct.version>
 
+        <!-- OpenAPI / Swagger -->
+        <springdoc-openapi.version>2.6.0</springdoc-openapi.version>
+
         <!-- gRPC -->
         <grpc.version>1.63.0</grpc.version>
         <protobuf.version>3.25.5</protobuf.version>
@@ -87,6 +90,12 @@
                 <version>${mapstruct.version}</version>
             </dependency>
 
+            <!-- OpenAPI / Swagger -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc-openapi.version}</version>
+            </dependency>
 
             <!-- ==================== gRPC Dependencies ==================== -->
             <!-- gRPC Core Libraries (io.grpc) -->

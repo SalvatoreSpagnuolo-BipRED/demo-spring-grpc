@@ -56,7 +56,8 @@ message AddUsageToContractProductRequest {
 
 message Product {
     string product_id = 1;
-    int32 pricing_id = 3;
+    string pricing_id = 2;
+    double usage_amount = 3;
 }
 
 message ContractCodeResponse {
@@ -66,7 +67,6 @@ message ContractCodeResponse {
 
 message ContractCodeRequest {
     string code = 1;
-    int32 version = 2;
 }
 
 message EmptyResponse {
