@@ -7,6 +7,9 @@ import it.salspa.demo.spring.grpc.contract.core.mapper.ContractMapper;
 import it.salspa.demo.spring.grpc.contract.core.mapper.ProductItemMapper;
 import it.salspa.demo.spring.grpc.contract.core.repository.ContractRepo;
 import it.salspa.demo.spring.grpc.contract.core.repository.ProductItemRepo;
+import it.salspa.demo.spring.grpc.customer.api.CustomerResponse;
+import it.salspa.demo.spring.grpc.customer.api.GetCustomerRequest;
+import it.salspa.demo.spring.grpc.customer.client.CustomerClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,7 @@ public class ContractService {
     private final ProductItemRepo productItemRepo;
     private final ContractMapper contractMapper;
     private final ProductItemMapper productItemMapper;
+    private final CustomerClient customerClient;
 
 
     @Transactional
@@ -55,8 +59,14 @@ public class ContractService {
         // Fetch associated ProductItemEntities
         List<ProductItemEntity> productItems = productItemRepo.findByContractCode(request.getCode());
 
+        // Fetch associated Customer info via gRPC
+        GetCustomerRequest getCustomerReq = GetCustomerRequest.newBuilder()
+                .setId(contractEntity.getCustomerId())
+                .build();
+        CustomerResponse customerResponse = customerClient.get(getCustomerReq);
+
         // Map to response DTO
-        ContractDetailResponse response = contractMapper.toDetailResponseDto(contractEntity, productItems);
+        ContractDetailResponse response = contractMapper.toDetailResponseDto(contractEntity, productItems, customerResponse);
 
         log.info("Contract details fetched for code: {}", request.getCode());
         return response;

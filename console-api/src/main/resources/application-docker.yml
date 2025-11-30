@@ -13,11 +13,11 @@ grpc:
     contract-manager:
       address: contract-manager-core:9091
       negotiation-type: plaintext
-    # customer-manager e pricing-manager non sono ancora attivi
-    # Manteniamo la configurazione locale che verrà ignorata se i servizi non sono disponibili
     customer-manager:
-      address: localhost:9092
+      address: customer-manager-core:9092
       negotiation-type: plaintext
+    # pricing-manager non è ancora attivo
+    # Manteniamo la configurazione locale che verrà ignorata se il servizio non è disponibile
     pricing-manager:
       address: localhost:9093
       negotiation-type: plaintext

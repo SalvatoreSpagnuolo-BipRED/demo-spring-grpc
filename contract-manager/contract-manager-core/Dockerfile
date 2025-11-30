@@ -11,7 +11,7 @@ COPY . .
 RUN mvn clean package -DskipTests -pl contract-manager/contract-manager-core -am
 
 # Runtime stage
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
 
 # Set working directory
 WORKDIR /app

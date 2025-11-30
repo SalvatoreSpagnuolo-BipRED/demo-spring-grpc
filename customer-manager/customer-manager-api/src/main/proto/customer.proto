@@ -17,7 +17,10 @@ service CustomerService {
 }
 
 message CreateCustomerRequest {
-    string name = 1;
+  string name = 1;
+  string email = 2;
+  string phone_number = 3;
+  CustomerStatus status = 4;
 }
 
 message GetCustomerRequest {

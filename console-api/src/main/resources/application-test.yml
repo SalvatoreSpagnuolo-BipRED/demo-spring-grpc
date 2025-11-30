@@ -1,0 +1,19 @@
+# Configurazione TEST per console-api
+# Attivato con profilo 'test' insieme a 'docker'
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://mongodb-console-test:27017/console?replicaSet=rs-console
+
+grpc:
+  client:
+    contract-manager:
+      address: contract-manager-core-test:9091
+      negotiation-type: plaintext
+    customer-manager:
+      address: customer-manager-core-test:9092
+      negotiation-type: plaintext
+    pricing-manager:
+      address: pricing-manager-core-test:9093
+      negotiation-type: plaintext

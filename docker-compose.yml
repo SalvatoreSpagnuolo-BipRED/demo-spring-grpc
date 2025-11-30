@@ -1,6 +1,6 @@
 version: '3.8'
 
-# Docker Compose per avviare console-api, contract-manager e i relativi database MongoDB
+# Docker Compose per avviare console-api, contract-manager, customer-manager e i relativi database MongoDB
 
 services:
   # ==================== Database Services ====================
@@ -48,19 +48,28 @@ services:
       start_interval: 1s
       retries: 30
 
-#  mongodb-customer:
-#    image: mongo:6.0
-#    container_name: mongodb-customer
-#    ports:
-#      - "27019:27017"
-#    environment:
-#      MONGO_INITDB_DATABASE: customer
-#    volumes:
-#      - mongodb-customer-data:/data/db
-#    restart: unless-stopped
-#    networks:
-#      - demo-network
-#
+  # MongoDB Replica Set per customer-manager
+  mongodb-customer:
+    image: mongo:6.0
+    container_name: mongodb-customer
+    command: ["--replSet", "rs-customer", "--bind_ip_all"]
+    ports:
+      - "27019:27017"
+    environment:
+      MONGO_INITDB_DATABASE: customer
+    volumes:
+      - mongodb-customer-data:/data/db
+    restart: unless-stopped
+    networks:
+      - demo-network
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs-customer',members:[{_id:0,host:'mongodb-customer:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
+
 #  mongodb-pricing:
 #    image: mongo:6.0
 #    container_name: mongodb-pricing
@@ -86,7 +95,25 @@ services:
       # Attiva il profilo Docker che configura le connessioni ai servizi Docker
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      - mongodb-contract
+      mongodb-contract:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - demo-network
+
+  customer-manager-core:
+    build:
+      context: .
+      dockerfile: customer-manager/customer-manager-core/Dockerfile
+    container_name: customer-manager-core
+    ports:
+      - "9092:9092"
+    environment:
+      # Attiva il profilo Docker che configura le connessioni ai servizi Docker
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      mongodb-customer:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - demo-network
@@ -102,8 +129,12 @@ services:
       # Attiva il profilo Docker che configura le connessioni ai servizi Docker
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      - mongodb-console
-      - contract-manager-core
+      mongodb-console:
+        condition: service_healthy
+      contract-manager-core:
+        condition: service_started
+      customer-manager-core:
+        condition: service_started
     restart: unless-stopped
     networks:
       - demo-network
@@ -111,7 +142,7 @@ services:
 volumes:
   mongodb-console-data:
   mongodb-contract-data:
-#  mongodb-customer-data:
+  mongodb-customer-data:
 #  mongodb-pricing-data:
 
 networks:

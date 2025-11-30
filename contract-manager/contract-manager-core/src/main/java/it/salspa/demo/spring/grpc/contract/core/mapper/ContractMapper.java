@@ -6,6 +6,7 @@ import it.salspa.demo.spring.grpc.contract.api.ContractStatus;
 import it.salspa.demo.spring.grpc.contract.api.CreateContractRequest;
 import it.salspa.demo.spring.grpc.contract.core.entity.ContractEntity;
 import it.salspa.demo.spring.grpc.contract.core.entity.ProductItemEntity;
+import it.salspa.demo.spring.grpc.customer.api.CustomerResponse;
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -33,10 +34,10 @@ public interface ContractMapper {
 
     @Mapping(target = "code", source = "contract.code")
     @Mapping(target = "version", source = "contract.version")
-    @Mapping(target = "customerId", source = "contract.customerId") //TODO: in futuro chiamare il servizio Customer per avere i dettagli
+    @Mapping(target = "customer", source = "customer")
     @Mapping(target = "status", source = "contract.status")
     @Mapping(target = "productsList", source = "productItems")
     @Mapping(target = "startDate", source = "contract.startDate")
     @Mapping(target = "endDate", source = "contract.endDate")
-    ContractDetailResponse toDetailResponseDto(ContractEntity contract, List<ProductItemEntity> productItems);
+    ContractDetailResponse toDetailResponseDto(ContractEntity contract, List<ProductItemEntity> productItems, CustomerResponse customer);
 }

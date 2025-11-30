@@ -1,0 +1,16 @@
+# Configurazione TEST per contract-manager-core
+# Attivato con profilo 'test' insieme a 'docker'
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://mongodb-contract-test:27017/contract?replicaSet=rs-contract
+
+grpc:
+  client:
+    customer-manager:
+      address: customer-manager-core-test:9092
+      negotiation-type: plaintext
+    pricing-manager:
+      address: pricing-manager-core-test:9093
+      negotiation-type: plaintext

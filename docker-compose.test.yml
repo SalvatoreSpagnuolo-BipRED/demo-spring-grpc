@@ -1,0 +1,97 @@
+# Docker Compose override per ambiente TEST
+# Uso: docker compose -f docker-compose.yml -f docker-compose.test.yml up -d
+#
+# IMPORTANTE: I volumi vengono resettati ad ogni ciclo up/down -v
+# Per ambiente pulito sempre: docker compose -f docker-compose.yml -f docker-compose.test.yml down -v && docker compose -f docker-compose.yml -f docker-compose.test.yml up -d
+
+services:
+  # Override MongoDB con volumi di test separati
+  # Container names e porte diverse per permettere coesistenza con ambiente prod
+  mongodb-console:
+    container_name: mongodb-console-test
+    ports:
+      - "27117:27017"  # Porta host diversa
+    volumes:
+      - mongodb-console-data-test:/data/db
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs-console',members:[{_id:0,host:'mongodb-console-test:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
+
+  mongodb-contract:
+    container_name: mongodb-contract-test
+    ports:
+      - "27118:27017"  # Porta host diversa
+    volumes:
+      - mongodb-contract-data-test:/data/db
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs-contract',members:[{_id:0,host:'mongodb-contract-test:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
+
+  mongodb-customer:
+    container_name: mongodb-customer-test
+    ports:
+      - "27119:27017"  # Porta host diversa
+    volumes:
+      - mongodb-customer-data-test:/data/db
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs-customer',members:[{_id:0,host:'mongodb-customer-test:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30
+
+  # Override servizi con container names e porte diverse
+  contract-manager-core:
+    container_name: contract-manager-core-test
+    ports:
+      - "9191:9091"  # Porta host diversa
+    environment:
+      SPRING_PROFILES_ACTIVE: docker,test
+    depends_on:
+      mongodb-contract:
+        condition: service_healthy
+
+  customer-manager-core:
+    container_name: customer-manager-core-test
+    ports:
+      - "9192:9092"  # Porta host diversa
+    environment:
+      SPRING_PROFILES_ACTIVE: docker,test
+    depends_on:
+      mongodb-customer:
+        condition: service_healthy
+
+  console-api:
+    container_name: console-api-test
+    ports:
+      - "8180:8080"  # Porta host diversa
+    environment:
+      SPRING_PROFILES_ACTIVE: docker,test
+    depends_on:
+      mongodb-console:
+        condition: service_healthy
+      contract-manager-core:
+        condition: service_started
+      customer-manager-core:
+        condition: service_started
+
+# Volumi di test separati - vengono cancellati con 'down -v'
+volumes:
+  mongodb-console-data-test:
+  mongodb-contract-data-test:
+  mongodb-customer-data-test:
+
+# Rete separata per ambiente test (permette coesistenza con prod)
+networks:
+  demo-network:
+    name: demo-network-test
+    driver: bridge

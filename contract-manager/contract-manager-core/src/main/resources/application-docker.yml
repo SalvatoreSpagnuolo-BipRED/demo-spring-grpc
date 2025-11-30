@@ -8,12 +8,13 @@ spring:
       uri: mongodb://mongodb-contract:27017/contract?replicaSet=rs-contract
 
 # Configurazione gRPC client per Docker
-# (per comunicazioni con altri servizi, quando saranno attivi)
 grpc:
   client:
     customer-manager:
-      address: localhost:9092
+      address: customer-manager-core:9092
       negotiation-type: plaintext
+    # pricing-manager non è ancora attivo
+    # Manteniamo la configurazione locale che verrà ignorata se il servizio non è disponibile
     pricing-manager:
       address: localhost:9093
       negotiation-type: plaintext

@@ -1,10 +1,10 @@
 package it.salspa.demo.spring.grpc.console.mapper;
 
 import com.google.protobuf.Timestamp;
-import it.salspa.demo.spring.grpc.console.dto.ContractCodeResponseDTO;
-import it.salspa.demo.spring.grpc.console.dto.ContractDetailResponseDTO;
-import it.salspa.demo.spring.grpc.console.dto.CreateContractRequestDTO;
-import it.salspa.demo.spring.grpc.console.dto.ProductDTO;
+import it.salspa.demo.spring.grpc.console.dto.contract.ContractCodeResponseDTO;
+import it.salspa.demo.spring.grpc.console.dto.contract.ContractDetailResponseDTO;
+import it.salspa.demo.spring.grpc.console.dto.contract.CreateContractRequestDTO;
+import it.salspa.demo.spring.grpc.console.dto.contract.ProductDTO;
 import it.salspa.demo.spring.grpc.contract.api.ContractCodeResponse;
 import it.salspa.demo.spring.grpc.contract.api.ContractDetailResponse;
 import it.salspa.demo.spring.grpc.contract.api.ContractStatus;
@@ -36,7 +36,7 @@ public interface ContractMapper {
 
     @Mapping(target = "code", source = "code")
     @Mapping(target = "version", source = "version")
-    @Mapping(target = "customerId", source = "customerId")
+    @Mapping(target = "customer", source = "customer")
     @Mapping(target = "status", source = "status")
     @Mapping(target = "products", source = "productsList")
     @Mapping(target = "startDate", source = "startDate")

@@ -1,0 +1,18 @@
+# Configurazione Docker per customer-manager-core
+# Questo profilo viene attivato quando si esegue con --spring.profiles.active=docker
+
+spring:
+  # Configurazione MongoDB per Docker (Replica Set)
+  data:
+    mongodb:
+      uri: mongodb://mongodb-customer:27017/customer?replicaSet=rs-customer
+
+# Configurazione gRPC client per Docker
+grpc:
+  client:
+    contract-manager-service:
+      address: contract-manager-core:9091
+      negotiation-type: plaintext
+    pricing-manager-service:
+      address: pricing-manager-core:9093
+      negotiation-type: plaintext

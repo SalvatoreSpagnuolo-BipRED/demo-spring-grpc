@@ -1,8 +1,8 @@
 package it.salspa.demo.spring.grpc.console.service;
 
-import it.salspa.demo.spring.grpc.console.dto.ContractCodeResponseDTO;
-import it.salspa.demo.spring.grpc.console.dto.ContractDetailResponseDTO;
-import it.salspa.demo.spring.grpc.console.dto.CreateContractRequestDTO;
+import it.salspa.demo.spring.grpc.console.dto.contract.ContractCodeResponseDTO;
+import it.salspa.demo.spring.grpc.console.dto.contract.ContractDetailResponseDTO;
+import it.salspa.demo.spring.grpc.console.dto.contract.CreateContractRequestDTO;
 import it.salspa.demo.spring.grpc.console.mapper.ContractMapper;
 import it.salspa.demo.spring.grpc.contract.api.ContractCodeRequest;
 import it.salspa.demo.spring.grpc.contract.api.ContractCodeResponse;
