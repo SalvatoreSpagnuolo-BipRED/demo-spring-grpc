@@ -19,11 +19,11 @@ grpc:
 
   # Client per comunicare con altri servizi
   client:
-    contract-manager-service:
+    contract-manager:
       address: localhost:9091
       negotiation-type: plaintext
 
-    customer-manager-service:
+    customer-manager:
       address: localhost:9092
       negotiation-type: plaintext
 

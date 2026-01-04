@@ -5,16 +5,14 @@ spring:
   # Configurazione MongoDB per Docker (Replica Set)
   data:
     mongodb:
-      uri: mongodb://mongodb-contract:27017/contract?replicaSet=rs-contract
+      uri: mongodb://contract-db:27017/contract?replicaSet=rs-contract
 
 # Configurazione gRPC client per Docker
 grpc:
   client:
     customer-manager:
-      address: customer-manager-core:9092
+      address: customer-service:9092
       negotiation-type: plaintext
-    # pricing-manager non è ancora attivo
-    # Manteniamo la configurazione locale che verrà ignorata se il servizio non è disponibile
     pricing-manager:
-      address: localhost:9093
+      address: pricing-service:9093
       negotiation-type: plaintext

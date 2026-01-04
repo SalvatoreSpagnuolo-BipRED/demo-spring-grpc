@@ -14,7 +14,6 @@ service PricingService {
     rpc GetPrice (PriceCodeRequest) returns (PriceResponse);
     rpc DeletePrice (PriceCodeRequest) returns (EmptyResponse);
     rpc ListPrice (google.protobuf.Empty) returns (PriceListResponse);
-    rpc AssociatePriceToContractProduct (AssociatePriceToContractProductRequest) returns (EmptyResponse);
     rpc CalculatePrice (CalculatePriceRequest) returns (CalculatePriceResponse);
 }
 
@@ -39,24 +38,15 @@ message PriceListResponse {
     repeated PriceResponse prices = 1;
 }
 
-message AssociatePriceToContractProductRequest {
-    string price_code = 1;
-    string contract_code = 2;
-    string product_code = 3;
-}
-
 message CalculatePriceRequest {
-    string contract_code = 1;
-    string product_code = 2;
+    string price_code = 2;
     double quantity = 3;
 }
 
 message CalculatePriceResponse {
-    string contract_code = 1;
-    string product_code = 2;
-    PricingFrequency period = 3;
-    Bracket pricing_bracket = 4;
-    double total_price = 5;
+    PricingFrequency period = 1;
+    Bracket pricing_bracket = 2;
+    double total_price = 3;
 }
 
 message Bracket {

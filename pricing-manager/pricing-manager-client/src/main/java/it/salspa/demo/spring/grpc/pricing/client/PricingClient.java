@@ -31,10 +31,6 @@ public class PricingClient {
         return blockingStub.listPrice(Empty.getDefaultInstance());
     }
 
-    public EmptyResponse associatePriceToContractProduct(AssociatePriceToContractProductRequest request) {
-        return blockingStub.associatePriceToContractProduct(request);
-    }
-
     public CalculatePriceResponse calculatePrice(CalculatePriceRequest request) {
         return blockingStub.calculatePrice(request);
     }

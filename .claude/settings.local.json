@@ -9,7 +9,9 @@
       "Bash(findstr:*)",
       "Bash(docker-compose logs:*)",
       "Bash(docker compose:*)",
-      "Bash(docker exec:*)"
+      "Bash(docker exec:*)",
+      "Bash(mvn clean compile:*)",
+      "Bash(timeout 10 docker compose:*)"
     ],
     "deny": [],
     "ask": []

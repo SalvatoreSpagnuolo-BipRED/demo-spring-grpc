@@ -1,6 +1,6 @@
-package it.salspa.demo.spring.grpc.contract.core.entity;
+package it.salspa.demo.spring.grpc.pricing.core.entity;
 
-import it.salspa.demo.spring.grpc.contract.api.ContractStatus;
+import it.salspa.demo.spring.grpc.pricing.api.PricingFrequency;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,18 +9,17 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "contracts")
-public class ContractEntity {
+@Document(collection = "pricings")
+public class PricingEntity {
 
     @Id
     private String code;
@@ -28,14 +27,9 @@ public class ContractEntity {
     @Version
     private Integer version;
 
-    @Indexed
-    private String customerId;
+    private PricingFrequency period;
 
-    private ContractStatus status;
-
-    private LocalDate startDate;
-
-    private LocalDate endDate;
+    private List<BracketEntity> pricingBrackets;
 
     @CreatedDate
     private Instant createdAt;
